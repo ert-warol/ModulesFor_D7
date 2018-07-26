@@ -1,0 +1,4 @@
+name = Change node field
+package = Node field
+description = module changes node
+core = 7.x

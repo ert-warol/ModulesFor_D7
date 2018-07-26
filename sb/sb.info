@@ -1,0 +1,4 @@
+name = Slogan block
+description = Add block with site slogan.
+core = 7.x
+package = Custom

@@ -1,0 +1,38 @@
+<?php
+
+function quote_of_the_day_block_info() {
+  $blocks['quote'] = array(
+    'info' => t('Quote of the day'),
+    'cache' => DRUPAL_NO_CACHE,
+    'weight'=> -99,
+    'status' => TRUE,
+    'region' => 'content',
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'pages' => '<front>',
+  );
+  return $blocks;
+}
+
+// Опредиление имяни блока, и его содержания
+function quote_of_the_day_block_view($delta = '') {
+  $block = array();
+  if ($delta == 'quote') {
+    $block = array(
+      'subject' => '',
+      'content' => quote_of_the_day_print_term(),
+    );
+  };
+  return $block;
+}
+
+function quote_of_the_day_print_term() {
+  $node = node_load(488);
+  $output = field_view_field('node', $node, 'field_quotation_text');
+  $output = render($output);
+  //$result = 'Test text';//print_r($page['content']['system_main']['nodes'][483]['#node']->field_term_test['und']);
+
+  return $output;
+}
+
+
+

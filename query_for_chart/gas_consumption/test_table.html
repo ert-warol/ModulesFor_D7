@@ -1,0 +1,140 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="chart_style.css">
+</head>
+<?php 
+ 
+//$today_all_date = '2015-10-15';
+$today_day = date('j');
+$today_all_date = date('Y-m-d');
+
+function construction_table() { 
+global $today_all_date, $today_day, $Query, $QueryResult, $ResultArray;
+          
+          
+          $Query[1] = "SELECT  Line, (convert(char(8), Dat, 112)) AS label, SUM(L4)  AS Total 
+                    FROM cpo_svod.dbo.LineRs 
+                    WHERE (Dat BETWEEN '2015-10-16' AND '$today_all_date' ) AND Line = 1
+                    GROUP BY Dat, Line  
+                    ORDER BY Dat";              
+                        
+          $ResultArray[1] = array_fill(1, $today_day, 0);  
+          
+          $Query[2] = "SELECT  Line, (convert(char(8), Dat, 112)) AS label, SUM(L8)  AS Total 
+                    FROM cpo_svod.dbo.LineRs 
+                    WHERE (Dat BETWEEN '2015-10-16' AND '$today_all_date' ) AND Line = 1
+                    GROUP BY Dat, Line  
+                    ORDER BY Dat";              
+                        
+          $ResultArray[2] = array_fill(1, $today_day, 0);
+           
+          $Query[3] = "SELECT  Line, (convert(char(8), Dat, 112)) AS label, SUM(GazObg*1000)  AS Total 
+                    FROM cpo_svod.dbo.LineRs 
+                    WHERE (Dat BETWEEN '2015-10-16' AND '$today_all_date' ) AND Line = 1
+                    GROUP BY Dat, Line  
+                    ORDER BY Dat";             
+                        
+          $ResultArray[3] = array_fill(1, $today_day, 0);
+           
+          require 'sql_srv_conect.php';
+          unset($ResultArray);
+          for ($i = 1; $i <= 3; $i++) {
+             $QueryResult[$i] = sqlsrv_query($conn, $Query[$i]);
+             while($Row = sqlsrv_fetch_array($QueryResult[$i]))
+                $ResultArray[$i][$Row['label']] = $Row['Total'];
+          } 
+return $ResultArray; }     
+?>
+<table border="1" cellpadding="1" cellspacing="1" style="width:100%">
+    <tbody>
+        <tr>
+            <?php
+             $MonthsNames = array(null, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+             $label_first_str = array(NULL, 'The name index');
+             $today_month = date('m');           
+             $today_year = date('Y');
+             //$today_day = $today_day + 1;  
+             for($i = 15; $i <= $today_day + 1; $i++) {
+                if ($i == 15): {
+                   $value = 'The name index'; 
+                }
+                elseif ($i <= $today_day AND $i > 15): {
+                   $value = $i.' '.$MonthsNames[$today_month].' '.$today_year; 
+                }
+                elseif ($i == $today_day + 1): {
+                   $value = 'Total';
+                }
+                endif;                               
+                echo '<td style="width: 100px; text-align: center;">'.$value.'</td>';              
+             } ?>           
+        </tr>
+        <tr>
+            <?php
+                $value_red_line[15] = 'G1 Red line';
+                $test = construction_table();
+                $today_day = $today_day + 1;
+                $j = 16;              
+                foreach($test[1] as $smena => $value) {                   
+                   $value = round($value, 1);                                    
+                   $value_red_line[$j] = $value;
+                   $j++;                                 
+                }
+                $value_red_line[$today_day] = array_sum($test[1]);
+                $value_red_line[$today_day] = round($value_red_line[$today_day], 1);
+                for ($i = 15; $i <= $today_day; $i++) {
+                   echo '<td style="width: 100px; text-align: center; color: red;">'.$value_red_line[$i].'</td>';
+                }
+              ?>         
+        </tr>
+        <tr>
+            <?php
+                $value_blue_line[15] = '(G1-1)+∆ Blue line';
+                $test = construction_table();               
+                $j = 16;              
+                foreach($test[2] as $smena => $value) {                   
+                   $value = round($value, 1);                                    
+                   $value_blue_line[$j] = $value;
+                   $j++;                                 
+                }
+                $value_blue_line[$today_day] = array_sum($test[2]);
+                $value_blue_line[$today_day] = round($value_blue_line[$today_day], 1);
+                for ($i = 15; $i <= $today_day; $i++) {
+                   echo '<td style="width: 100px; text-align: center; color: blue;">'.$value_blue_line[$i].'</td>';
+                }       
+              ?>            
+        </tr>
+        <tr>
+            <?php
+                $value_green_line[15] = 'G2 Green line';
+                $test = construction_table();               
+                $j = 16;              
+                foreach($test[3] as $smena => $value) {                   
+                   $value = round($value, 1);                                    
+                   $value_green_line[$j] = $value;
+                   $j++;                                 
+                }
+                $value_green_line[$today_day] = array_sum($test[3]);
+                $value_green_line[$today_day] = round($value_green_line[$today_day], 1);
+                for ($i = 15; $i <= $today_day; $i++) {
+                   echo '<td style="width: 100px; text-align: center; color: green;">'.$value_green_line[$i].'</td>';
+                }          
+            ?>          
+        </tr>
+        <tr>
+            <?php
+                $value_black[15] = '∆Gbio';             
+                for ($i = 16; $i <= $today_day; $i++) {
+                   $value_black[$i] = $value_blue_line[$i] - $value_green_line[$i];
+                   $value_black[$i] = round($value_black[$i], 1);
+                }
+                $value_black[$today_day] = array_sum($value_black);
+                for ($i = 15; $i <= $today_day; $i++) {
+                   echo '<td style="width: 100px; text-align: center; color: black;">'.$value_black[$i].'</td>';
+                }
+              ?>            
+        </tr>
+    </tbody>
+</table>
+<p class="rtecenter">&nbsp;</p>
+
+
+

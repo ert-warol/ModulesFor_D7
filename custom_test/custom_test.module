@@ -1,0 +1,40 @@
+<?php
+
+function custom_test_block_info() {
+    $blocks['custom_test'] = array(
+      'info' => t('Custom test block'),
+      'cache' => DRUPAL_NO_CACHE,
+      'status' => TRUE,
+      'region' => 'content',
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => 'node/483',
+    );
+    return $blocks;
+}
+
+// Опредиление имяни блока, и его содержания
+function custom_test_block_view($delta = '') {
+    $block = array();
+    if ($delta == 'custom_test') {
+        $block = array(
+          'subject' => custom_test(),
+          'content' => custom_test_print_term(),
+        );
+    };
+    return $block;
+}
+function custom_test() {
+    $result = '<h5>'.'Термены материала'.'</h5>';
+  return $result;
+}
+function custom_test_print_term() {
+  $node = node_load(483);
+  $output = field_view_field('node', $node, 'field_term_test');
+  $output = render($output);
+  //$result = 'Test text';//print_r($page['content']['system_main']['nodes'][483]['#node']->field_term_test['und']);
+
+    return $output;
+}
+
+
+

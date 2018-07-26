@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * Implements hook_node_insert().
+*/
+
+function change_node_field_node_presave($node) {
+
+    if ($node->type == 'forum') {        
+
+        $personnel_number = $node->field_tn['und'][0]['value'];
+    
+        $query[1] = db_select('pgok_users', 'tn_test');
+        $query[1]->fields('tn_test', array('TN', 'Nceh','FIO','mail'));
+        $query[1]->condition('tn_test.TN', $personnel_number, '=');
+        $result[1] = $query[1]->execute();        
+
+        foreach($result[1] as $row)
+        
+            $node->field_fio1['und'][0]['value'] = $row->FIO;
+            $node->field_fio1['und'][0]['safe_value'] = $row->FIO;      
+            $node->field_mail['und'][0]['value'] = $row->mail;
+            $node->field_mail['und'][0]['safe_value'] = $row->mail;
+           
+        $query[2] = db_select('pgok_ceh', 'nceh_test');
+        $query[2]->fields('nceh_test', array('Ceh', 'Nceh','Nach','nach_mail'));
+        $query[2]->condition('nceh_test.Nceh', $row->Nceh, '=');
+        $result[2] = $query[2]->execute();
+
+        foreach($result[2] as $row)         
+      
+            $node->field_ceh['und'][0]['value'] = $row->Ceh;
+            $node->field_ceh['und'][0]['safe_value'] = $row->Ceh;        
+            $node->field_nach['und'][0]['value'] = $row->Nach;
+            $node->field_nach['und'][0]['safe_value'] = $row->Nach;
+            $node->field_nach_mail['und'][0]['value'] = $row->nach_mail;
+            $node->field_nach_mail['und'][0]['safe_value'] = $row->nach_mail;              
+    }      
+}
+
+function change_node_field_node_validate($node, $form, &$form_state) {
+
+    $personnel_number = $node->field_tn['und'][0]['value'];
+    
+    $query = db_select('pgok_users', 'tn_test');
+    $query->fields('tn_test', array('TN', 'FIO'));
+    $query->condition('tn_test.TN', $personnel_number, '=');
+    $result = $query->execute();        
+
+    foreach($result as $row)
+        
+        $value = $row->FIO;            
+
+    if ($value == NULL) {
+            
+        form_set_error('field_tn', t('*** Табельный номер ( '.$node->field_tn['und'][0]['value'].' ) НЕ  СУЩЕСТВУЕТ ***'));         
+    }       
+}
+
+function change_node_field_form_alter(&$form, &$form_state, $form_id) {
+    dpm($form_id);
+    dpm($form_state);
+    dpm($form);
+    
+}
+
+
+

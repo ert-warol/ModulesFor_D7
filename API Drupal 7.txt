@@ -1,0 +1,266 @@
+
+API Bloks
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+function hook_block_info
+hook_block_info() - объявляет блоки предоставляемые модулем и устанавливает для них настройки по умолчанию.
+
+Возвращаемое значение
+
+Ассоциативный массив, ключи которого определяют дельту для каждого блока и, значения которых содержат описания блоков.
+Каждое описание блок сам по себе является ассоциативным массивом, со следующими парами ключ-значение:
+
+ info - (Обязательно) удобочитаемый административное имя блока. Используется для идентификации блока на экранах администрирования, и не отображается для неадминистративных пользователей.
+cache - (Необязательно) битовая описания того, что вид кэширования подходит для блока. Drupal предоставляет следующие константы Bitmask для определения кэш-зернистость:
+
+DRUPAL_CACHE_PER_ROLE (default): Блок может меняться в зависимости от роли пользователя при просмотре страницы
+DRUPAL_CACHE_PER_USER: Блок может меняться в зависимости от пользователя при просмотре страницы.
+                       Этот параметр может быть ресурсоемкая для сайтов с большим количеством пользователей,
+                       и их следует использовать только тогда, когда DRUPAL_CACHE_PER_ROLE недостаточно.
+DRUPAL_CACHE_PER_PAGE: Блок может меняться в зависимости от просматриваемой страницы.
+  DRUPAL_CACHE_GLOBAL: Блок является одинаковым для каждого пользователя на каждой странице, где он виден.
+  DRUPAL_CACHE_CUSTOM: Модуль реализует свою собственную систему кэширования.
+      DRUPAL_NO_CACHE: Блок не должен кэшироваться.
+
+           properties: (необязательно) Массив дополнительных метаданных для добавления к блоку. Общие свойства включают в себя
+
+               weight: (необязательно) Начальное значение для веса этого блока. Большинство модулей не обеспечивают начальное значение,
+                       и любое значение, может быть изменено пользователем на экране конфигурации блока.
+
+               status: (необязательно) Начальное значение для статуса блока включен. (1 = включено, 0 = отключено).
+                       Большинство модулей не обеспечивают начальное значение, и любое значение, может быть изменено пользователем на экране конфигурации блока.
+
+               region: (необязательно) Начальное значение для тематической области, внутри которой этот блок устанавливается.
+                        Большинство модулей не обеспечивают начальное значение, и любое значение, может быть изменено пользователем на экране конфигурации блока.
+                        Примечание: Если вы установили регион, который не доступен в данный момент включен тему, блок будет отключен.
+
+           visibility: (необязательно) Начальное значение для флага видимости, который рассказывает, как интерпретировать значение «страниц». Возможные значения:
+
+                     BLOCK_VISIBILITY_NOTLISTED: Показать на всех страницах, кроме перечисленных страниц. «страниц» списки путей, для которых не следует показывать блок.
+                        BLOCK_VISIBILITY_LISTED: Показывать только на перечисленных страницах. «страниц» списки путей, для которых должны быть показаны блок.
+                           BLOCK_VISIBILITY_PHP: Использовать пользовательский код PHP для определения видимости. 'Страницы' дает код PHP использовать.
+                                                 Большинство модулей не обеспечивают начальное значение 'видимости' или «страниц», и любое значение,
+                                                 может быть изменено пользователем на экране конфигурации блока.
+                pages: (необязательно) Смотри 'видимость' выше. Строка, которая содержит одну или несколько страниц путей,
+                       разделенных "\n", "\r", or "\r\n" когда "видимость" установлено значение 
+                       BLOCK_VISIBILITY_NOTLISTED или BLOCK_VISIBILITY_LISTED (например: "<front>\nnode/1" ), 
+                       или пользовательский PHP-код, когда "видимость" установлено значение BLOCK_VISIBILITY_PHP.
+                       Дорожки могут использовать '*' в качестве шаблона (совпадение любого числа символов); '<front>' обозначает первую страницу сайта. 
+                       Для BLOCK_VISIBILITY_PHP, возвращаемого значения PHP код должен быть TRUE, если блок должен быть видимым или FALSE, если блок не должен быть виден.
+
+
+hook_block_view()
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+hook_block_view() - возвращает содержимое блока. Параметр $delta - уникальный индентификатор блока предоставляемый hook_block_info() параметр info
+
+
+Пример формы
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+// описание формы
+function my_first_form($form, &$form_state){
+    $form=array();
+    $form['name'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Название поля'),
+        '#default_value' => t('Текст по умолчанию'),
+    );
+    $form['settings'] = array(
+        '#type' => 'radios',
+        '#title' => t('Состояние статуса'),
+        '#options' => array(0 => t('Статус 1'), 1 => t('Статус 2')),
+        '#description' => t('Описание данного элемента.'),
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Submit'),
+    );
+    return $form;
+}
+
+#type – это тип элемента (поле ввода, область ввода, выпадающий список, скрытое поле и т.д.).
+
+#title –отвечает за заголовок поля
+
+#description – описание поля
+
+#default_value – значение по умолчанию
+
+/* имяформы+_form_submit - позволяет определить обработчик -поумолчанию*/
+function my_first_form_submit($form, &$form_state){
+    debug($form_state['values']);
+}
+
+// функция которая выполнит "отрисовку" формы
+function main_function(){
+    $form = drupal_get_form('my_first_form'); //получаем поля формы
+    $form = drupal_render($form); //рендерим форму
+    return $form.'Содержимое тестовой страницы.';
+    //echo '1231234'; // это не трогайте, оно нужно для другого примера =)
+}
+
+// хук (крючок) определяющий компоненты меню - именно
+// он позволяет нам сделать адрес  http://имясайт/nvnforum
+// доступным для обращения
+function telephone_book_menu(){
+    $items = array();
+
+    $items['telephone_book'] = array( // nvnforum- адрес на сайте по которому будет доступна форма
+        'title' => 'Заголовок страницы',//заголовок страницы
+        'page callback' => 'main_function',//имя функции, которая отрисует форму
+        'type' => MENU_NORMAL_ITEM, //тип страницы
+        'access callback' => TRUE, //доступ к странице (здесь можно написать проверяющую функцию)
+    );
+
+
+    return $items;
+}
+
+
+
+
+def get_lineset(self):
+        return list([
+                     {                       
+                      'seriesName': _('Overall Utilization'),                                                  
+                      'data':list(map(lambda x:{
+                                                  'showValue':'1',
+                                                  'value':self.safe_float(x['koef']), 
+                                                  'color':'#000000',                                               
+                                                 },
+                                        self.raw_data_vector[0])),
+                     },                                        
+                    ])
+
+
+[
+                        '''declare @avg dec(12,2) = (select AVG(koef ) from [dbo].[{index_type}] ('00001',0,'{start_date}','{end_date}',1,0,'ENG'))
+                           select CalendarYear,MonthNumberOfYear,MonthName,koef, @avg Average
+                           from 
+                               (
+                                select 1 q,CalendarYear,MonthNumberOfYear,(CAST((LEFT(MonthName, 3)) as char(3))+' /'+CAST((RIGHT(CalendarYear, 2))as char(2))) as MonthName,koef 
+                                from [dbo].[{index_type}] ('00001',0,'{start_date}','{end_date}',1,0,'ENG')
+     
+                                union all
+                                select 2 q,NULL,NULL,'Total',NULL
+                                union all
+     
+                                select 3 q,CalendarYear,MonthNumberOfYear,'12 monthes',koef
+                                from dbo.{index_type} ('00001',0,'{start_date}','{end_date}',0,0,'ENG')     
+                               )m
+                               order by m.q, CalendarYear, MonthNumberOfYear'''.format(**self.resolve_format),
+                               
+                        '''declare @avg dec(12,2) = (select AVG(koef ) from [dbo].[{index_type}] ('00004',0,'{start_date}','{end_date}',1,0,'ENG'))
+                           select CalendarYear,MonthNumberOfYear,MonthName,koef, @avg Average
+                           from 
+                               (
+                                select 1 q,CalendarYear,MonthNumberOfYear,(CAST((LEFT(MonthName, 3)) as char(3))+' /'+CAST((RIGHT(CalendarYear, 2))as char(2))) as MonthName,koef 
+                                from [dbo].[{index_type}] ('00004',0,'{start_date}','{end_date}',1,0,'ENG')
+     
+                                union all
+                                select 2 q,NULL,NULL,'12 monthes',NULL
+                                union all
+     
+                                select 3 q,CalendarYear,MonthNumberOfYear,'',koef
+                                from dbo.{index_type} ('00004',0,'{start_date}','{end_date}',0,0,'ENG')     
+                               )m
+                           order by m.q, CalendarYear, MonthNumberOfYear'''.format(**self.resolve_format),                       
+                        ]
+
+def get_dataset(self):
+        if self.resolve_format['query_key'] == 'Production_Rate':
+            result = list([{
+                      'seriesname':_('FPM'),
+                      'color':'#00b050',
+                      'data':list(map(lambda x:{
+                                                'showValue':'0',
+                                                'value':self.safe_float(x['koef']),                                                                                               
+                                                },
+                                      self.raw_data_vector[0])),
+                      },
+                     {
+                      'seriesname':_('FYM'),
+                      'color':'#376091',
+                      'data':list(map(lambda x:{
+                                                'showValue':'0',
+                                                'value':self.safe_float(x['koef']),                                                                                               
+                                                },
+                                      self.raw_data_vector[1])),
+                      },
+                     {
+                      'seriesname':_('Average FPM'),
+                      'renderas':'line',
+                      'color':'#1a7744',
+                      'data':list(map(lambda x:{
+                                                'showValue':'0',
+                                                'value':self.safe_float(x['Average']),
+                                                },
+                                      self.raw_data_vector[0])),
+                      },
+                         {
+                      'seriesname':_('Average FYM'),
+                      'renderas':'line',
+                      'color':'#133d6e',
+                      'data':list(map(lambda x:{
+                                                'showValue':'0',
+                                                'value':self.safe_float(x['Average']),
+                                                },
+                                      self.raw_data_vector[1])),
+                      },
+                    
+                    ])
+        else:
+            result = list([{
+                      'seriesname':_('FPM'),
+                      'color':'#00b050',
+                      'data':list(map(lambda x:{
+                                                'showValue':'0',
+                                                'value':self.safe_float(x['koef']),                                                                                               
+                                                },
+                                      self.raw_data_vector[0])),
+                      },
+                     {
+                      'seriesname':_('FYM'),
+                      'color':'#376091',
+                      'data':list(map(lambda x:{
+                                                'showValue':'0',
+                                                'value':self.safe_float(x['koef']),                                                                                               
+                                                },
+                                      self.raw_data_vector[1])),
+                      },
+                     {
+                      'seriesname':_('Average FPM'),
+                      'renderas':'line',
+                      'color':'#1a7744',
+                      'data':list(map(lambda x:{
+                                                'showValue':'0',
+                                                'value':self.safe_float(x['Average']),
+                                                },
+                                      self.raw_data_vector[0])),
+                      },
+                     {
+                      'seriesname':_('Average FYM'),
+                      'renderas':'line',
+                      'color':'#133d6e',
+                      'data':list(map(lambda x:{
+                                                'showValue':'0',
+                                                'value':self.safe_float(x['Average']),
+                                                },
+                                      self.raw_data_vector[1])),
+                      },
+                     {
+                      'seriesname':_(u'Benchmark'),
+                      'renderas':'line',
+                      'color':'ff0000',
+                      'data':list(map(lambda x:{
+                                                'showValue':'0',
+                                                'value':self.safe_float(x['BenchMark']),
+                                                },
+                                      self.raw_data_vector[2]))
+                      },
+                    
+                    ])    
+        return result 
+
+

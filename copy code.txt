@@ -1,0 +1,79 @@
+﻿<?php
+/**
+ * Implements hook_node_insert().
+*/
+
+function change_node_field_node_presave($node) {
+    if ($node->type == 'forum') {
+    $charset='utf8';
+       
+    header('Content-type: text/html; charset=utf-8');    
+    mysql_set_charset($charset);       
+
+    $personnel_number = $node->field_tn['und'][0]['value'];
+        
+    $Query[1] = "SELECT * FROM `PGOK-users` WHERE TN = $personnel_number";    
+    $QueryResult[1] = mysql_query($Query[1]);
+    $Row[1] = mysql_fetch_array($QueryResult[1]);
+    
+    $namber_ceh = $Row[1]['Nceh'];
+    
+    $Query[2] = "SELECT * FROM  `PGOK-ceh` WHERE Nceh = $namber_ceh";
+    $QueryResult[2] = mysql_query($Query[2]);
+    $Row[2] = mysql_fetch_array($QueryResult[2]);     
+
+ 
+        $node->field_ceh['und'][0]['value'] = $Row[1]['Nceh'];
+        $node->field_fio1['und'][0]['value'] = $Row[1]['FIO'];
+        $node->field_fio1['und'][0]['safe_value'] = $Row[1]['FIO']; 
+        $node->field_ceh['und'][0]['value'] = $Row[1]['Nceh'].'  '.$Row[2]['Ceh'];
+        $node->field_ceh['und'][0]['safe_value'] = $Row[1]['Nceh'].'  '.$Row[2]['Ceh'];        
+        $node->field_nach['und'][0]['value'] = $Row[2]['Nach'];
+        $node->field_nach['und'][0]['safe_value'] = $Row[2]['Nach'];              
+  }  
+}
+<?php     
+
+$query = db_select('PGOK-users', 'tn');
+$query->fields('tn', array('TN', 'FIO'));
+$query->condition('tn.TN', '13820', '=');
+$result = $query->execute();
+
+  foreach($result as $row) {
+    echo 'Результат '.$row->FIO. "<br/>";
+  }
+print_r($query);
+?>
+
+
+<?php     
+
+$query[1] = db_select('pgok_users', 'tn_test');
+$query[1]->fields('tn_test', array('TN'));
+$result[1] = $query[1]->execute();
+
+foreach($result[1] as $row) 
+//echo 'Номер ЦЕХА :'.$row->Nceh. "<br/>";
+echo 'Табельный номер :'.$row->TN. "<br/>";
+//echo 'ФИО :'.$row->FIO. "<br/>";  
+
+$query[2] = db_select('pgok_ceh', 'nceh_test');
+$query[2]->fields('nceh_test', array('Ceh', 'Nceh','Nach'));
+$query[2]->condition('nceh_test.Nceh', $row->Nceh, '=');
+$result[2] = $query[2]->execute();
+
+foreach($result[2] as $row) 
+echo 'Номер ЦЕХА :'.$row->Nceh. "<br/>";
+echo 'ФИО начальника цеха :'.$row->Nach. "<br/>"; 
+
+?>
+
+foreach($result_tn as $row) { 
+   if ($row->TN == 13820) {
+        echo  '<br>'.$row->TN .' -- НАЙДЕН'. '<br/>';
+        echo '<br>'. 'Табельный номер :'.$row->TN. '<br/>';
+   }
+   else {  
+        echo '<br>'. 'Табельный номер НЕ НАЙДЕН '<br/>';
+   }
+}

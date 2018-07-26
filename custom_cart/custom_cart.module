@@ -1,0 +1,94 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: ert
+ * Date: 16.08.14
+ * Time: 13:35
+ */
+/**
+ * @file
+ * A block module that displays recent blog and forum posts.
+ */
+function custom_cart_help($path, $arg) {
+    switch ($path) {
+        case "admin/help#custom_cart":
+            return '<p>'. t("Модуль с выводом количества товаров в корзине и общей суммы") .'</p>';
+            break;
+    }
+}
+/**
+ * Implements hook_block_info().
+ */
+function custom_cart_block_info() {
+    $blocks['custom_cart'] = array(
+        'info' => t('custom_cart'),
+        'cache' => DRUPAL_CACHE_PER_ROLE,
+);
+    return $blocks;
+}
+/**
+ * Implements hook_block_view().
+ */
+function custom_cart_block_view($delta = '') {
+    $block = array();
+    switch ($delta) {
+        case 'custom_cart':
+            $block['subject'] = t('cart');
+            $items = from_cart();
+            $block['content'] = array(
+                '#theme' => 'item_list',
+                '#items' => $items,
+                '#title' => l(t('cart'), 'cart'),
+                '#type' => 'ul',
+                '#attributes' => array(
+                    'id' => 'my-custom-listing',
+                    'class' => 'custom-class another-custom-class',
+                ),
+            );
+            break;
+    }
+    return $block;
+}
+
+function from_cart() {
+    global $user;
+    $data = array();
+    $quantity = 0;
+    $order = commerce_cart_order_load($user->uid);
+
+    if ($order) {
+        $wrapper = entity_metadata_wrapper('commerce_order', $order);
+        $line_items = $wrapper->commerce_line_items;
+        $quantity = commerce_line_items_quantity($line_items, commerce_product_line_item_types());
+
+        if ($quantity != 0) {
+            $total = commerce_line_items_total($line_items);
+            $data['quantity'] = 'Товаров: ' . $quantity;
+            $data['total'] = 'На сумму: ' . commerce_currency_format($total['amount'], $total['currency_code'], $object = NULL, $convert = TRUE);
+
+        }
+        else {
+            $data['print'] = theme_commerce_cart_empty_block();
+        }
+    }
+    else {
+       $data['print'] = theme_commerce_cart_empty_block();
+    }
+    return $data;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

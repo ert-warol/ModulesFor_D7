@@ -1,0 +1,186 @@
+<?php
+function today_date() {  
+  $today = date('d-m-Y');
+  return $today;  
+}
+
+function query_for_chart_block_info() {
+  $blocks['query_for_chart'] = array(
+    'info' => t('Query for chart'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );   
+  return $blocks;
+}
+
+// Опредиление имяни блока, и его содержания
+ function query_for_chart_block_view($delta = '') {     
+  $block = array();    
+  if ($delta == 'query_for_chart') {
+    $block = array(
+      'subject' => '',
+      'content' => main_function(),
+    );
+  };  
+  return $block;
+}  
+function interval_form($form, &$form_state){	  
+      //
+	  $form['time_period'] = array(
+		 '#type' => 'radios',
+		 '#title' => t('Выбор временного периода'),
+         '#options' => array(
+            1 => t('Годы'),
+            2 => t('Месяцы'),
+            3 => t('Дни'),
+            //4 => t('Часы'),
+          ),
+          //'#required' => TRUE, // добавлено обязательное заполнение
+      );   
+      $form['date_begin'] = array(
+         '#type' => 'textfield',
+         '#title' => t('Начальная дата выбора интервала'),
+         //'#default_value' => '01-01-2012',         
+      );         
+      $form['date_end'] = array(
+         '#type' => 'textfield',
+         '#title' => t('Конечная дата выбора интервала'),
+         '#default_value' => today_date(),         
+      );           
+      $form['submit'] = array(
+         '#name' => 'yes_on',
+		 '#type' => 'submit',
+		 '#value' => t('Построить график'),
+	  );
+	  $form['clear'] = array(
+         '#type' => 'submit',
+         '#value' => t('Сбросить форму'),
+         '#validate' => array('interval_form_clear'),
+      );	    
+	  if ($_GET['q'] === "node/1"): {
+	    $path_calendar = "/calendar.js";	    
+	  } 
+	  elseif( $_GET['q'] === "node/10" ): {
+	    $path_calendar = "/calendar_ob.js";
+	  }
+      elseif( $_GET['q'] === "node/6"): {
+	    $path_calendar = "/calendar.js";
+	  }
+      elseif( $_GET['q'] === "node/11"): {
+	    $path_calendar = "/calendar.js";
+	  }
+	  endif;	     
+	  $form['#attached']['library'][] = array('system', 'ui.datepicker');
+      $form['#attached']['js'][] = drupal_get_path('module', 'query_for_chart') . $path_calendar;       
+      
+	return $form;
+}
+function  interval_form_validate($form, &$form_state) {
+    
+  $today_index = strtotime(today_date());  
+  
+  if(strtotime($form_state['input']['date_begin']) > 0 and strtotime($form_state['input']['date_end']) > 0 and strtotime($form_state['input']['date_begin']) < strtotime($form_state['input']['date_end']) and strtotime($form_state['input']['date_end']) <= $today_index): {
+     drupal_set_message(t('Интервал задан верно.')); 
+     $interval = 1;
+     setcookie("interval_chart", $interval, time()+80, "/", "web1.pgok.corp");
+     setcookie("interval_chart", $interval, time()+80, "/", "drupal.ferrexpo.ua");          
+  }
+  elseif(strtotime($form_state['input']['date_begin']) == $today_index): {
+     drupal_set_message(t('Начальное значение интервала не может быть ' ."$today". '. ВЫБОР НЕ ДОПУСЬИМ! ПОВТОРИТЕ ВЫБОР ЕЩЕ РАЗ'));      
+     $interval = 0; 
+     setcookie("interval_chart", $interval, time()+80, "/", "web1.pgok.corp");
+     setcookie("interval_chart", $interval, time()+80, "/", "drupal.ferrexpo.ua");
+  }
+  elseif(strtotime($form_state['input']['date_end']) > $today_index): {
+     drupal_set_message(t('Конечная дата интервала не может быть больше сегодняшнего числа ' ."$today". '. ВЫБОР НЕ ДОПУСЬИМ! ПОВТОРИТЕ ВЫБОР ЕЩЕ РАЗ'));     
+     $interval = 0;  
+     setcookie("interval_chart", $interval, time()+80, "/", "web1.pgok.corp");
+     setcookie("interval_chart", $interval, time()+80, "/", "drupal.ferrexpo.ua");
+  }
+  elseif(strtotime($form_state['input']['date_end']) == strtotime($form_state['input']['date_begin'])): {
+     drupal_set_message(t('Начальное и конечное значение интервала совпадают, ВЫБОР НЕ ДОПУСЬИМ! ПОВТОРИТЕ ВЫБОР ЕЩЕ РАЗ'));     
+     $interval = 0;  
+     setcookie("interval_chart", $interval, time()+80, "/", "web1.pgok.corp");
+     setcookie("interval_chart", $interval, time()+80, "/", "drupal.ferrexpo.ua");
+  }
+  elseif(strtotime($form_state['input']['date_end']) < strtotime($form_state['input']['date_begin']) and $form_state['input']['date_end'] != NULL and $form_state['input']['date_begin'] != NULL): {
+     drupal_set_message(t('Начальное значение введенно не коректно, ВЫБОР НЕ ДОПУСЬИМ! ПОВТОРИТЕ ВЫБОР ЕЩЕ РАЗ'));     
+     $interval = 0;  
+     setcookie("interval_chart", $interval, time()+80, "/", "web1.pgok.corp");
+     setcookie("interval_chart", $interval, time()+80, "/", "drupal.ferrexpo.ua");
+  }
+  elseif(strtotime($form_state['input']['date_begin']) > 0 and strtotime($form_state['input']['date_end']) == NULL ): {
+      drupal_set_message(t('Не заданно конечное значение интервала, ПОВТОРИТЕ ВЫБОР ЕЩЕ РАЗ'));      
+      $interval = 0;
+      setcookie("interval_chart", $interval, time()+80, "/", "web1.pgok.corp");
+      setcookie("interval_chart", $interval, time()+80, "/", "drupal.ferrexpo.ua");
+    }
+  elseif(strtotime($form_state['input']['date_end']) > 0 and strtotime($form_state['input']['date_begin']) == NULL ): {
+     drupal_set_message(t('Не заданно начальное значение интервала, ПОВТОРИТЕ ВЫБОР ЕЩЕ РАЗ'));     
+     $interval = 0;  
+     setcookie("interval_chart", $interval, time()+80, "/", "web1.pgok.corp");
+     setcookie("interval_chart", $interval, time()+80, "/", "drupal.ferrexpo.ua");
+  }
+      
+  endif;    
+}
+function interval_form_submit($form, &$form_state) {  
+     
+   if($_COOKIE["interval_chart"] = 1) {
+     $date_begin = $form_state['input']['date_begin'];
+     $date_end = $form_state['input']['date_end'];
+     $time_period = $form_state['input']['time_period'];
+     setcookie("begin", $date_begin, time()+80, "/", "web1.pgok.corp");
+     setcookie("end", $date_end, time()+80, "/", "web1.pgok.corp");
+     setcookie("period", $time_period, time()+80, "/", "web1.pgok.corp"); 
+     setcookie("begin", $date_begin, time()+80, "/", "drupal.ferrexpo.ua");
+     setcookie("end", $date_end, time()+80, "/", "drupal.ferrexpo.ua");
+     setcookie("period", $time_period, time()+80, "/", "drupal.ferrexpo.ua");
+     $node_name = $_GET['q'];
+     setcookie("node_name", $node_name, time()+120, "/", "web1.pgok.corp"); 
+     setcookie("node_name", $node_name, time()+120, "/", "drupal.ferrexpo.ua"); 
+     drupal_set_message(t('Форма заполнена.'));
+     	 
+     //header('http://web1.pgok.corp/drupal/sites/all/modules/query_for_chart/cpo_chart/cpo_all_chart.php');
+     //header('http://web1.pgok.corp/drupal/sites/all/modules/query_for_chart/cpo_chart/cpo_all_chart.html');
+	 //header('http://ert1.bigweb.com.ua/sites/all/modules/query_for_chart/4-chart.html'); 
+	 //header('http://ert1.bigweb.com.ua/sites/all/modules/query_for_chart/test.php'); 
+	  
+   }
+   else {
+     $date_begin = 0;
+     $date_end = 0;
+     $time_period = 0;
+     setcookie("begin", $date_begin, time()+80, "/", "web1.pgok.corp");
+     setcookie("end", $date_end, time()+80, "/", "web1.pgok.corp");
+     setcookie("period", $time_period, time()+80, "/", "web1.pgok.corp");
+     setcookie("begin", $date_begin, time()+80, "/", "drupal.ferrexpo.ua");
+     setcookie("end", $date_end, time()+80, "/", "drupal.ferrexpo.ua");
+     setcookie("period", $time_period, time()+80, "/", "drupal.ferrexpo.ua");
+     $node_name = 0;
+     setcookie("node_name", $node_name, time()+120, "/", "web1.pgok.corp"); 
+     setcookie("node_name", $node_name, time()+120, "/", "drupal.ferrexpo.ua");
+     drupal_set_message(t('Форма заполнена НЕВЕРНО, повторите заполнение.'));
+   }    
+         
+} 
+function interval_form_clear($form, &$form_state) {
+    $form_state['rebuild'] = TRUE;  
+    $date_begin = 0;
+    $date_end = 0;
+    $time_period = 0;
+    $interval = 0;
+    setcookie("begin", $date_begin, time()+80, "/", "web1.pgok.corp");
+    setcookie("end", $date_end, time()+80, "/", "web1.pgok.corp");
+    setcookie("period", $time_period, time()+80, "/", "web1.pgok.corp");
+    setcookie("interval_chart", $interval, time()+80, "/", "web1.pgok.corp"); 
+    setcookie("begin", $date_begin, time()+80, "/", "drupal.ferrexpo.ua");
+    setcookie("end", $date_end, time()+80, "/", "drupal.ferrexpo.ua");
+    setcookie("period", $time_period, time()+80, "/", "drupal.ferrexpo.ua");
+    setcookie("interval_chart", $interval, time()+80, "/", "drupal.ferrexpo.ua");
+}
+function main_function(){   
+	$form = drupal_get_form('interval_form'); //получаем поля формы	  
+	$form = drupal_render($form); //рендерим форму	
+		      
+	return $form;   
+}

@@ -1,0 +1,134 @@
+<?php
+function subdivisions(){
+    $value = array(0 => t('ЦЕХ 1'), 1 => t('ЦЕХ 2'), 2 => t('ЦЕХ 3'));
+    return $value;
+}
+function chief_subdivisions(){
+    $value = array(0 => 'Иванов В.С.', 1 => 'Арсеньев Ю.А.', 2 => 'Довгалева Л.В.');
+    return $value;
+}
+function top_chief(){
+    $value = array(0 => 'Латоус В.В.', 1 => 'Иванов В.С.', 2 => 'Спатарь Д.Д.');
+    return $value;
+}
+function phonebook_form($form, &$form_state){
+    $form=array();
+    $form['top_chief'] = array(
+        '#type' => 'select',
+        '#title' => t('Вопрос к членам правления'),
+        '#options' => top_chief(),
+        '#description' => t('Текст описания'),
+        '#required' => true
+    );
+    $form['settings'] = array(
+        '#type' => 'select',
+        '#title' => t('Выберите ЦЕХ'),
+        '#options' => subdivisions(),
+        '#description' => t('Текст описания'),
+        '#required' => true
+    );
+    $form['chief'] = array(
+        '#type' => 'select',
+        '#title' => t('Выберите Руководителя'),
+        '#options' => chief_subdivisions(),
+        '#description' => t('Текст описания'),
+        '#required' => true
+    );
+    $form['question'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Опишите вопрос'),
+        '#default_value' => t('Enter the text'),
+
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Search'),
+    );
+
+    return $form;
+}
+
+/* имяформы+_form_submit - позволяет определить обработчик -поумолчанию*/
+function phonebook_form_submit($form, &$form_state){
+    dpm(($form_state['values']));
+}
+
+// функция которая выполнит "отрисовку" формы
+function render_function(){
+    $form = drupal_get_form('phonebook_form'); //получаем поля формы
+    $form = drupal_render($form); //рендерим форму
+    return $form;
+    //echo '1231234'; // это не трогайте, оно нужно для другого примера =)
+}
+
+// хук (крючок) определяющий компоненты меню - именно
+// он позволяет нам сделать адрес  http://имясайт/telephone_book
+// доступным для обращения
+function telephone_book_menu(){
+    $items = array();
+
+    $items['telephone_book'] = array( // - адрес на сайте по которому будет доступна форма
+        'title' => 'Заголовок страницы',//заголовок страницы
+        'page callback' => 'render_function',//имя функции, которая отрисует форму
+        'type' => MENU_NORMAL_ITEM, //тип страницы
+        'access callback' => TRUE, //доступ к странице
+    );
+    return $items;
+}
+
+/*
+function telephone_book_block_info() {
+  $blocks['telephone_book'] = array(
+    'info' => t('telephone_book'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );   
+  return $blocks;
+}
+
+// Опредиление имяни блока, и его содержания
+function telephone_book_block_view($delta = '') {
+  $block = array();    
+  if ($delta == 'telephone_book') {
+    $block = array(
+      'subject' => '',
+      'content' => main_form(),
+    );
+  };
+  return $block;
+}
+function telephone_book_form($form, &$form_state){
+        $form=array();
+        $form['name'] = array(
+            '#type'	=> 'textfield',
+            '#title' => t('Название поля'),
+            '#default_value' => t('Текст по умолчанию'),
+        );
+        $form['settings'] = array(
+            '#type' => 'radios',
+            '#title' => t('Состояние статуса'),
+            '#options' => array(0 => t('Статус 1'), 1 => t('Статус 2')),
+            '#description' => t('Описание данного элемента.'),
+        );
+        $form['submit'] = array(
+            '#type' => 'submit',
+            '#value' => t('Submit'),
+        );
+        return $form;
+}
+/*function  phonebook_form_validate($form, &$form_state) {
+
+}
+function telephone_book_form_submit($form, &$form_state) {
+
+     drupal_set_message(t('Форма заполнена.'));
+}
+/*function phonebook_form_clear($form, &$form_state) {
+    $form_state['rebuild'] = TRUE;
+}
+function main_form(){
+    $form = drupal_get_form('telephone_book_form'); //получаем поля формы
+    $form = drupal_render($form); //рендерим форму
+    return $form.'Содержимое тестовой страницы.';
+}
+//dpm($form);*/
+

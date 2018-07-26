@@ -1,0 +1,55 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: ert
+ * Date: 16.06.14
+ * Time: 13:46
+ */
+
+function sb_block_info() {
+    $blocks['site_slogan'] = array(
+        'info' => t('Site slogan'),
+        'cache' => DRUPAL_CACHE_GLOBAL,
+    );
+
+    return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function sb_block_view($delta = '') {
+    $block = array();
+
+    switch ($delta) {
+        case 'site_slogan':
+            $block['subject'] = t('Site slogan');
+            $block['content'] = variable_get('site_slogan', '');
+            break;
+    }
+    return $block;
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function sb_block_configure($delta = '') {
+    $form = array();
+    if ($delta == 'site_slogan') {
+        $form['site_slogan'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Site slogan'),
+            '#default_value' => variable_get('site_slogan', ''),
+        );
+    }
+    return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ */
+function sb_block_save($delta = '', $edit = array()) {
+    if ($delta == 'site_slogan') {
+        variable_set('site_slogan', $edit['site_slogan']);
+    }
+}

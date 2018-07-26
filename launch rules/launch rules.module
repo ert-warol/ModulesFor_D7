@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * Implements hook_cron
+ */
+function launch rules_cron() {
+	
+	// change the anonymous user on the other ID
+	global $user;
+	$original_user = $user;
+	$old_state = drupal_save_session();
+	drupal_save_session(FALSE);
+	$user = user_load(751);	
+	
+	// connect rule rules_ruler_sendmail_ideas_noreply
+	if (REQUEST_TIME - variable_get('rules_ruler_sendmail_ideas_noreply') >= 60*2) {
+		variable_set('rules_ruler_sendmail_ideas_noreply', REQUEST_TIME);
+		return TRUE;
+	}
+	// Save session
+	$user = $original_user;
+	drupal_save_session($old_state);	
+}

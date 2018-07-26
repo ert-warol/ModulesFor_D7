@@ -1,0 +1,87 @@
+@CHARSET "UTF-8";
+body {
+   margin: 0;
+}
+/*#chartContainer_current_indicator_line_1,
+#chartContainer_current_indicator_line_2,
+#chartContainer_current_indicator_line_3,
+#chartContainer_current_indicator_line_4 {
+   width: 180px;
+   border: 2px solid #246624;
+   height: 290px;
+   border-bottom-right-radius: 25px;
+   border-bottom-left-radius: 25px;
+          
+}
+#raphael-paper-11 tspan,
+#Style Attribute {
+   font-size: 14px !important;
+}*/
+#current_indicator_line_1_year,
+#current_indicator_line_1_month,
+#current_indicator_line_1_day,
+#current_indicator_line_2_year,
+#current_indicator_line_2_month,
+#current_indicator_line_2_day,
+#current_indicator_line_3_year,
+#current_indicator_line_3_month,
+#current_indicator_line_3_day,
+#current_indicator_line_4_year,
+#current_indicator_line_4_month,
+#current_indicator_line_4_day {
+   float: left; 
+   
+}   
+#cpo_chart_line_1_year_link,
+#cpo_chart_line_1_month_link,
+#cpo_chart_line_1_day_link,
+#cpo_chart_line_2_year_link,
+#cpo_chart_line_2_month_link,
+#cpo_chart_line_2_day_link,
+#cpo_chart_line_3_year_link,
+#cpo_chart_line_3_month_link,
+#cpo_chart_line_3_day_link,
+#cpo_chart_line_4_year_link,
+#cpo_chart_line_4_month_link,
+#cpo_chart_line_4_day_link {
+   display: block;
+   margin-bottom: 10px;
+   margin-left: 17px;
+   margin-top: 10px;
+   width: 180px; 
+   background: white;
+   /*border: 3px solid green;*/   
+   color: green;
+   border-radius: 25px; 
+   font-size: 10px;
+   font-family: calibri;
+   float: left;   
+   text-align: center;
+   font-weight: 600;
+}
+#cpo_chart_line_1_year_link:hover,
+#cpo_chart_line_1_month_link:hover,
+#cpo_chart_line_1_day_link:hover,
+#cpo_chart_line_2_year_link:hover,
+#cpo_chart_line_2_month_link:hover,
+#cpo_chart_line_2_day_link:hover,
+#cpo_chart_line_3_year_link:hover,
+#cpo_chart_line_3_month_link:hover,
+#cpo_chart_line_3_day_link:hover,
+#cpo_chart_line_4_year_link:hover,
+#cpo_chart_line_4_month_link:hover,
+#cpo_chart_line_4_day_link:hover  {
+   box-shadow: 0 0 15px #5F965F;
+}
+#date_in_bottom {
+    width: 200px;
+    color: #246624;
+    text-align: center;
+    font-size: 20px;
+    font-family: calibri;
+    font-weight: 600;
+}
+	
+	
+	
+	

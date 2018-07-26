@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title>Poltavskiy GOK otdel OPO</title>
+    <link rel="stylesheet" type="text/css" href="chart_cpo_style.css">    
+    <script type="text/javascript" src="fusioncharts/fusioncharts.js"></script>
+    <script type="text/javascript" src="fusioncharts/themes/fusioncharts.theme.fint.js"></script>
+    <script type="text/javascript">
+    </script>
+</head>
+<body>
+<center>
+    <div id="cpo_div_line_4_link_month">
+          <a id="cpo_chart_line_4_month_link" href="http://drupal.ferrexpo.ua/drupal/sites/all/modules/query_for_chart/cpo_chart/productivity_pelletizing_4_line_day.html" target="_blank"><h1>The index of current month</h1></a>          
+    </div>  
+    <div id="current_indicator_line_4_month">  
+       <div id="current_indicator_line_4_month">FusionCharts XT will load here!</div>       
+          <script type="text/javascript">
+           <!--
+             var revenueChart = new FusionCharts({              
+              "type": "vbullet",
+              "renderAt": "current_indicator_line_4_month",
+              "width": "190px",
+              "height": "220px",
+              "dataSource": ""
+             });       
+             revenueChart.setXMLUrl( "current_indicator_line_4_month.php" );
+             revenueChart.render();
+          // -->
+          </script>         
+                               
+    </div>    
+</center>
+   <?php 
+       $today_year = date('Y');
+       $today_month = date('m');
+       $MonthsNames = array(NULL, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Des');
+       echo '<h2 id="date_in_bottom">'.$MonthsNames[$today_month].'/'.$today_year.'</h2>';     
+   ?>
+</body>
+</html>

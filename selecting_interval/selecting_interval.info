@@ -1,0 +1,5 @@
+name = Selecting interval
+description = Модуль позволяет строить визуальные графики, по значениям в дневном временном периоде.
+package = Charts
+core = 7.x
+version = 7.x-1.0

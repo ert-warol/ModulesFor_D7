@@ -1,0 +1,27 @@
+<html>
+<head>
+    <title>Bank Idey 3d Pie</title>
+    <script type="text/javascript" src="fusioncharts/fusioncharts.js"></script>
+    <script type="text/javascript" src="fusioncharts/themes/fusioncharts.theme.carbon.js"></script>
+    <script type="text/javascript">
+    </script>
+</head>
+<body>
+<center>   
+    <div id="chart-Container-all-charts">FusionCharts XT will load here!</div>
+    <script type="text/javascript">
+    
+        var revenueChart = new FusionCharts({
+            "type": "column2d",
+            "renderAt": "chart-Container-all-charts",
+            "width": "100%",
+            "height": "320",
+            "dataSource": ""
+        });        
+        revenueChart.setXMLUrl( "total_chart.php" );
+        revenueChart.render();
+    
+    </script>
+</center>
+</body>
+</html>

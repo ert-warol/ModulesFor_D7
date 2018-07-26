@@ -1,0 +1,5 @@
+name = Questions form
+description = Модуль для создания и обаботки вопросов к руководителю.
+package = Custom
+core = 7.x
+version = 7.x-1.0

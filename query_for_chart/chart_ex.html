@@ -1,0 +1,78 @@
+<html>
+<head>
+    <title>My First chart using FusionCharts Suite XT</title>
+    <script type="text/javascript" src="fusioncharts/fusioncharts.js"></script>
+    <script type="text/javascript" src="fusioncharts/themes/fusioncharts.theme.fint.js"></script>
+    <script type="text/javascript">
+        FusionCharts.ready(function () {
+            var drillDownChart = new FusionCharts({
+                "type": "mscolumn3d",
+                "renderAt": "chartContainer",
+                "width": "950",
+                "height": "600",
+                "dataFormat": "xml",
+                "dataSource": "<chart caption='Sales in Last Two Years' subcaption='Quarter-wise comparison' xaxisname='Quarter' yaxisname='Sales (In USD)' numberprefix='$' theme='fint'>"+
+                   "<categories>"+
+                "<category label='line_1' />"+
+                "<category label='line_2' />"+
+                "<category label='line_3' />"+
+                "<category label='line_4' />"+
+                "<category label='line_5' />"+
+                "<category label='line_6' />"+
+                "<category label='line_7' />"+
+                "<category label='line_8' />"+
+
+                "</categories>"+
+                   "<dataset seriesname='Previous Year'>"+
+                      "<set value='10000' />"+
+                      "<set value='11500' />"+
+                      "<set value='12500' />"+
+                      "<set value='15000' />"+
+                      "<set value='25400' />"+
+                      "<set value='29800' />"+
+                      "<set value='21800' />"+
+                      "<set value='26800' />"+
+                   "</dataset>"+
+                   "<dataset seriesname='Current Year'>"+
+                      "<set value='25400' />"+
+                      "<set value='29800' />"+
+                      "<set value='21800' />"+
+                      "<set value='26800' />"+
+                      "<set value='10000' />"+
+                      "<set value='11500' />"+
+                      "<set value='12500' />"+
+                      "<set value='15000' />"+
+
+                "</dataset>"+
+                   "<dataset seriesname='Current Year2'>"+
+                      "<set value='25100' />"+
+                      "<set value='29700' />"+
+                      "<set value='21200' />"+
+                      "<set value='26000' />"+
+                      "<set value='21800' />"+
+                      "<set value='26800' />"+
+                      "<set value='10000' />"+
+                      "<set value='11500' />"+
+
+                "</dataset>"+
+                   "<dataset seriesname='Current Year3'>"+
+                      "<set value='22100' />"+
+                      "<set value='24700' />"+
+                      "<set value='21200' />"+
+                      "<set value='29000' />"+
+                      "<set value='29700' />"+
+                      "<set value='21200' />"+
+                      "<set value='26000' />"+
+                      "<set value='21800' />"+
+
+                "</dataset>"+
+            "</chart>"
+            });
+            drillDownChart.render();
+        })
+    </script>
+</head>
+<body>
+<div id="chartContainer">FusionCharts will render here</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+@CHARSET "UTF-8";
+#total_table {
+   margin-bottom: 30px;
+}
+#table_all {
+   border: 1px dotted black;
+   margin: auto;
+}
+#table_all td {
+   border-color: transparent;
+   border: 1px dotted black;
+   
+}
+#table_all tr {
+   border: 1px dotted black;
+}

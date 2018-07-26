@@ -1,0 +1,43 @@
+@CHARSET "UTF-8";
+body {
+   margin: 0;
+}
+#total_table {        
+   margin-bottom: 40px;
+}
+#total_table_main_td,
+#total_table_gas_consumption_2_main_td {
+   background: #246624;
+   color: white;
+   padding: 3px;
+   text-align: center;
+   font-size: 16px;
+   font-family: calibri;
+}
+#total_table td {
+   padding: 3px;
+   text-align: center;
+   font-size: 16px;
+   font-family: calibri;
+   border: 1px dotted;
+}
+#table_all td {
+   border: 1px dotted black;
+}
+#table_all {
+   border: 1px dotted;
+}
+#total_table #line_value {
+   background: rgba(70, 136, 71, 0.34);
+}
+#first_table,
+#second_table,
+#third_table,
+#fourth_table	 {
+   float: left;
+}	
+#scroll_table {
+   overflow: auto;
+   height: 600px;
+   border: 1px solid #777; 
+}

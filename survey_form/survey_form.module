@@ -1,0 +1,125 @@
+<?php
+
+function survey_form_block_info() {
+  $blocks['survey_form'] = array(
+    'info' => t('Survey form'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  return $blocks;
+}
+// Опредиление имяни блока, и его содержания
+function survey_form_block_view($delta = '') {
+  $block = array();
+  if ($delta == 'survey_form') {
+    $block = array(
+      'subject' => '',
+      'content' => survey_form_main_function(),
+    );
+  };
+  return $block;
+}
+
+function survey_form_interview(){
+  global $user;
+  $value = array(1 => 'Неудовлетворительно', 2 => 'Удовлетворительно');
+  return $value;
+}
+function survey_form_serch_uid(){
+  global $user;
+  $query = db_select('drupal.interview', 'i');
+  $query->fields('i', array('UID'));
+// $result = $query->execute()->fetchAssoc();
+  $result = $query->execute();
+  $i = 0;
+  while($record = $result->fetchAssoc()) {
+    $value[$i] = $record['UID'];
+    $i++;
+  }
+  if(in_array($user->uid, $value)){
+    $result = true;
+  }
+  else{
+    $result = false;
+  }
+  return $result;
+}
+function survey_form_form() {
+  global $user;
+  $form = array();
+  $form['kiev_star'] = array(
+    '#type' => 'radios',
+    '#title' => t(''),
+    '#options' => survey_form_interview(),
+  );
+  $form['vodafone'] = array(
+    '#type' => 'radios',
+    '#title' => t(''),
+    '#options' => survey_form_interview(),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Проголосовать',
+  );
+  //dpm($form_state);
+  return $form;
+}
+
+function survey_form_form_submit($form, &$form_state) {
+  global $user;
+  //$form_state['redirect'] = 'node/439';
+  //$value = gettype($form_state['values']['kiev_star']);
+  $value = survey_form_serch_uid();
+  if($value === true){
+    $form_state['redirect'] = 'node/440';
+  }
+  else {
+    $count = 1;
+    if (!empty($form_state['values']['kiev_star']) and !empty($form_state['values']['vodafone'])): {
+      $count = 2;
+    }
+    elseif (($form_state['values']['kiev_star'] === NULL) and ($form_state['values']['vodafone'] === NULL)): {
+      $count = 0;
+    }
+    endif;
+
+    if (!empty($form_state['values']['kiev_star'])) {
+      $result_kievstar = $form_state['values']['kiev_star'];
+    }
+    else {
+      $result_kievstar = 0;
+
+    }
+    if (!empty($form_state['values']['vodafone'])) {
+      $result_vodafone = $form_state['values']['vodafone'];
+    }
+    else {
+      $result_vodafone = 0;
+    }
+
+
+    //$result = db_query("SELECT n.nid, n.title FROM {node} n WHERE n.type = '$type'");
+    db_query("INSERT drupal.interview(UID,kievstar,vodafon,number_of_voters)VALUES ( '$user->uid', '$result_kievstar', '$result_vodafone','$count')");
+    $form_state['redirect'] = 'node/439';
+  }
+  dpm($form_state['values']);
+}
+/*function survey_form_menu(){
+  $items = array();
+  $items['survey-form'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'Пожалуйста оцените качество связи мобильных операторов: Киевстар и Водафон.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('survey_form_form'),
+    'access callback' => TRUE,
+  );
+  return $items;
+}*/
+function survey_form_main_function(){
+  $form = drupal_get_form('survey_form_form'); //получаем поля формы
+  $form = drupal_render($form); //рендерим форму
+
+  return $form;
+}
+
+
+

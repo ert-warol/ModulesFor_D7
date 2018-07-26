@@ -1,0 +1,4 @@
+name = custom_test
+package = custom
+description = Test for term
+core = 7.x

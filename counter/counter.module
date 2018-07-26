@@ -1,0 +1,150 @@
+<?php
+/**
+ * @file
+ * A block module that displays recent blog and forum posts.
+ */
+function counter_help($path, $arg) {
+    switch ($path) {
+        case "admin/help#counter":
+            return '<p>'. t("Модуль типа (TESTS) выводит общее количество заполненных форм для регистрации") .'</p>';
+            break;
+    }
+}
+/**
+ * Implements hook_block_info().
+ */
+function counter_block_info() {
+    $blocks['counter'] = array(
+        'info' => t('Counter'), //Имя, которое будет показано в списке блоков.
+        'cache' => DRUPAL_CACHE_PER_ROLE, //По умолчанию указание
+    );
+    return $blocks;
+}
+/**
+ * Implements hook_block_view().
+ */
+function counter_block_view($delta = '') {
+    $block = array();
+    switch ($delta) {
+        case 'counter':
+            $block['subject'] = t('Счетчик');
+            $items = counter_result();
+//            $output=theme_item_list(array('items' => $items, 'title' => 'Считаем заполнения', 'type' => 'ul', 'attributes' => array()));
+            $block['content'] = array(
+              '#theme' => 'item_list',
+              '#items' => $items,
+              '#title' => 'Считаем заполнения',
+              '#type' => 'ul',
+              '#attributes' => array(),
+            );
+            break;
+    }
+    return $block;
+}
+/**
+ * Implements hook_block_configure().
+ */
+function counter_block_configure($delta = '') {
+    $form = array();
+    if ($delta == 'counter') {
+        $form['site_slogan'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Слоган сайта'),
+            '#default_value' => variable_get('site_slogan', ''),
+        );
+        $form['registration_result'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Количество пользователей заполнивших форму регистрации'),
+            '#default_value' => array_sum(counter_result()),
+        );
+        counter_result();        
+    }
+    return $form;
+}
+/**
+ * Implements hook_block_save().
+ */
+function counter_block_save($delta = '', $edit = array()) {
+    if ($delta == 'counter') {
+        variable_set('site_slogan', $edit['site_slogan']);
+    }
+}
+function counter_result() {
+    $result_count = array();
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+        ->entityCondition('bundle', 'webform');
+        $result = $query->execute();
+        $keys = array_keys($result['node']);
+        foreach($keys as $nid) {
+           module_load_include('inc', 'webform', 'includes/webform.report');
+           $result_count[] = webform_get_submission_count($nid);
+        }
+    return $result_count;
+}
+
+function counter_form($form, &$form_state) {
+    $form=array();
+    $form['name'] = array(
+        '#type'	=> 'textfield',
+        '#title' => t('Название поля'),
+        '#default_value' => t('Текст по умолчанию'),
+    );
+    $form['settings'] = array(
+        '#type' => 'radios',
+        '#title' => t('Состояние статуса'),
+        '#options' => array(0 => t('Статус 1'), 1 => t('Статус 2')),
+        '#description' => t('Описание данного элемента.'),
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Submit'),
+    );
+    return $form;
+}
+
+function counter_menu(){
+    $items = array(); // инициализируем массив наших пунктов меню
+
+    $items['page_example'] = array(  //добавляем страницу по пути 'page_example'
+        'title' => 'Для Катюши', //заголовок страницы
+        'description' => 'Обычная страница', //описание страницы
+        'page callback' => 'page_example', //функция возвращающая контент страницы
+        'access callback' => TRUE, // разрешаем всем просматривать эту страницу
+        'expanded' => TRUE,
+        'type' => MENU_NORMAL_ITEM,
+
+        'menu_name' => 'main-menu',
+    );
+    return $items; //возвращаем список страниц
+}
+
+function page_example($content = NULL) {
+    $content = drupal_get_form('counter_form');
+    drupal_add_js(drupal_get_path('module', 'counter') .'/block1.js', 'file');
+    return $content; //возвращаем контент
+}
+
+function output_node(){
+    $node = new stdClass();
+    $node->type = 'Article';
+    node_object_prepare($node);
+    $node->title = 'Заголовок ноды';
+    $node->language = LANGUAGE_NONE;
+    $node->body[LANGUAGE_NONE][0]['value'] = 'Содержание ноды';
+    $node->body[LANGUAGE_NONE][0]['summary'] = 'Текст анонса';
+    $node->body[LANGUAGE_NONE][0]['format'] = 'filtered_html';
+    $node->uid = 1;                                              // id автора
+    $node->status = 1;                                           // 1 - опубликовано, 0 - нет
+    $node->promote = 1;                                          // 1 - показывать на главной, 0 - нет
+    node_save($node);
+}
+
+
+
+
+
+
+
+
+

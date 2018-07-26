@@ -1,0 +1,7 @@
+; &id:$
+
+name = Launch rules
+package = Castom
+description = Модуль для запуска правила из CRON Drupal
+version = 7.x 1.0-dev
+core = 7.x

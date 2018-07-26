@@ -1,0 +1,69 @@
+<?php
+function selecting_interval_today_date() {  
+  $today = date('d-m-Y');
+  return $today;  
+}
+
+function selecting_interval_block_info() {
+  $blocks['selecting_interval'] = array(
+    'info' => t('Selecting interval'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );   
+  return $blocks;
+}
+
+// Опредиление имяни блока, и его содержания
+function selecting_interval_block_view($delta = '') {     
+  $block = array();    
+  if ($delta == 'selecting_interval') {
+    $block = array(
+      'subject' => '',
+      'content' => main_function_form(),
+    );
+  };
+   
+  return $block;
+} 
+ 
+function interval_day_form($form, &$form_state){	  
+      //
+	  $form['date_day_begin'] = array(
+         '#type' => 'textfield',
+         '#title' => t('Start date interval selection'),
+         //'#default_value' => '01-01-2012',         
+      );         
+      $form['date_day_end'] = array(
+         '#type' => 'textfield',
+         '#title' => t('End selection interval'),
+         '#default_value' => today_date(),         
+      );           
+      $form['submit'] = array(
+         '#name' => 'yes_on',
+		 '#type' => 'submit',
+		 '#value' => t('Build the diagram'),
+	  );
+	  $form['clear'] = array(
+         '#type' => 'submit',
+         '#value' => t('Clear form'),
+         '#validate' => array('interval_day_form_clear'),
+      );
+	  $form['#attached']['library'][] = array('system', 'ui.datepicker');
+      $form['#attached']['js'][] = drupal_get_path('module', 'selecting_interval') .calendar_selecting_interval.js;
+      
+	return $form;
+}
+
+function interval_day_form_submit($form, &$form_state) {
+     drupal_set_message(t('Форма заполнена НЕВЕРНО, повторите заполнение.'));
+
+} 
+function interval_day_form_clear($form, &$form_state) {
+    $form_state['rebuild'] = TRUE;
+}
+function main_function_form(){   
+	$form = drupal_get_form('interval_day_form'); //получаем поля формы	  
+	$form = drupal_render($form); //рендерим форму	
+		      
+	return $form;   
+} 
+

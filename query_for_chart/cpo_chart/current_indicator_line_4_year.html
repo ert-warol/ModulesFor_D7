@@ -1,0 +1,38 @@
+<html>
+<head>
+    <title>Poltavskiy GOK otdel OPO</title>
+    <link rel="stylesheet" type="text/css" href="chart_cpo_style.css">    
+    <script type="text/javascript" src="fusioncharts/fusioncharts.js"></script>
+    <script type="text/javascript" src="fusioncharts/themes/fusioncharts.theme.fint.js"></script>
+    <script type="text/javascript">
+    </script>
+</head>
+<body>
+<center>
+    <div id="cpo_div_line_4_link_year">
+          <a id="cpo_chart_line_4_year_link" href="http://drupal.ferrexpo.ua/drupal/sites/all/modules/query_for_chart/cpo_chart/productivity_pelletizing_4_line_month.html" target="_blank" style="margin-bottom: 32px;"><h1>This year</h1></a>          
+    </div>  
+    <div id="current_indicator_line_4_year">  
+       <div id="current_indicator_line_4_year">FusionCharts XT will load here!</div>       
+          <script type="text/javascript">
+           <!--
+             var revenueChart = new FusionCharts({              
+              "type": "vbullet",
+              "renderAt": "current_indicator_line_4_year",
+              "width": "190px",
+              "height": "220px",
+              "dataSource": ""
+             });       
+             revenueChart.setXMLUrl( "current_indicator_line_4_year.php" );
+             revenueChart.render();
+          // -->
+          </script>         
+                               
+    </div>    
+</center>
+   <?php 
+       $today_year = date('Y');
+       echo '<h2 id="date_in_bottom">'.'Year '.$today_year.'</h2>';      
+   ?>
+</body>
+</html>

@@ -1,0 +1,5 @@
+name = Survey Form
+description = Модуль генерирует индивидуальную форму опроса
+package = Custom
+core = 7.x
+version = 7.x-1.0

@@ -1,0 +1,102 @@
+<?php
+function telephone_book_subdivisions(){
+    $value = array(
+      0 => t('ЦЕХ 1'),
+      1 => t('ЦЕХ 2'),
+      2 => t('ЦЕХ 3')
+    );
+    return $value;
+}
+function telephone_book_chief_subdivisions(){
+    $value = array(
+      0 => 'Иванов В.С.',
+      1 => 'Арсеньев Ю.А.',
+      2 => 'Довгалева Л.В.',
+    );
+    return $value;
+}
+function telephone_book_top_chief(){
+    $value = array(
+      0 => 'Латоус В.В.',
+      1 => 'Иванов В.С.',
+      2 => 'Спатарь Д.Д.'
+    );
+    return $value;
+}
+
+/**
+ * Implements hook_action_info().
+ */
+/**
+ * Implements hook_form_alter().
+ */
+
+function telephone_book_form() {
+    $form = array();
+    $form['top_chief'] = array(
+        '#type' => 'select',
+        '#title' => t('Вопрос к членам правления'),
+        '#options' => telephone_book_top_chief(),
+        '#description' => t('Текст описания'),
+        '#required' => true
+    );
+    $form['settings'] = array(
+        '#type' => 'select',
+        '#title' => t('Выберите ЦЕХ'),
+        '#options' => telephone_book_subdivisions(),
+        '#description' => t('Текст описания'),
+        '#required' => true
+    );
+    $form['chief'] = array(
+        '#type' => 'select',
+        '#title' => t('Выберите Руководителя'),
+        '#options' => telephone_book_chief_subdivisions(),
+        '#description' => t('Текст описания'),
+        '#required' => true
+    );
+    $form['question'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Опишите вопрос'),
+//        '#default_value' => t('Enter the text'),
+        '#attributes' => array('placeholder' => t('Enter the text')),
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Search'),
+    );
+
+    return $form;
+}
+
+function telephone_book_form_submit($form, &$form_state){
+    //dpm(($form_state['values']));
+}
+
+
+//function render_function(){
+//    $form = drupal_get_form('phonebook_form'); //получаем поля формы
+//    $form = drupal_render($form); //рендерим форму
+//    return $form;
+//}
+/*function page_test(){
+    echo '*** Test page text ***';
+}*/
+
+function telephone_book_menu(){
+    $items = array();
+
+//    $items['telephone-book'] = array( // - адрес на сайте по которому будет доступна форма
+//        'title' => 'Заголовок страницы',//заголовок страницы
+//        'page callback' => 'render_function',//имя функции, которая отрисует форму
+//        'type' => MENU_CALLBACK, //тип страницы
+//        'access callback' => TRUE, //доступ к странице
+//    );
+    $items['telephone-book'] = array(
+        'type' => MENU_CALLBACK,
+        'title' => 'Заголовок страницы',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('telephone_book_form'),
+        'access callback' => TRUE,
+    );
+    return $items;
+}

@@ -1,0 +1,4 @@
+name = custom_cart
+description = Модуль для вывода дополнительных полей DC (корзины)
+version = 7.x-1.x-dev
+core = 7.x

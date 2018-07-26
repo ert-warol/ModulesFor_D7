@@ -1,0 +1,5 @@
+name = Query for chart
+description = Модуль позволяет строить визуальные графики, по указанным значениям.
+package = Charts
+core = 7.x
+version = 7.x-1.0
